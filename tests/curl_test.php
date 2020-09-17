@@ -4,15 +4,23 @@ require_once(dirname(dirname(__FILE__)) . '/vendor/autoload.php');
 class CurlTest extends PHPUnit_Framework_TestCase {
     public function testGet() {
         $http = new \dcai\curl;
-        $response = $http->get('http://httpbin.org/get', array('test'=>1));
+        $response = $http->get('http://httpbin.org/get', array('key'=>1));
         $json = $response->json();
-        $this->assertEquals($json->args->test, 1);
+        $this->assertEquals($json->args->key, 1);
     }
-    public function testPost() {
+    public function testPostArray() {
         $http = new \dcai\curl;
-        $response = $http->post('http://httpbin.org/post', array('test'=>2));
+        $response = $http->post('http://httpbin.org/post', array('key_1'=>1, 'key_2'=>'val_2'));
         $json = $response->json();
-        $this->assertEquals($json->form->test, 2);
+        $this->assertEquals($json->form->key_1, 1);
+        $this->assertEquals($json->form->key_2, 'val_2');
+    }
+    public function testPostString() {
+        $http = new \dcai\curl;
+        $response = $http->post('http://httpbin.org/post', 'key_1=1&key_2=val_2');
+        $json = $response->json();
+        $this->assertEquals($json->form->key_1, 1);
+        $this->assertEquals($json->form->key_2, 'val_2');
     }
     public function testUpload() {
         $http = new \dcai\curl();
@@ -48,6 +56,11 @@ class CurlTest extends PHPUnit_Framework_TestCase {
                 'wii',
             ),
         ));
-        //$this->assertEquals($json->form->test, 2);
+        $this->assertCount(8, $processed);
+        $this->assertArrayHasKey('hello', $processed);
+        $this->assertEquals($processed['hello'], 'world');
+        $this->assertArrayHasKey('nestedlist[name2][2]', $processed);
+        $this->assertArrayHasKey('coollist[0]', $processed);
+        $this->assertEquals($processed['coollist[0]'], 'xbox one');
     }
 }

@@ -378,7 +378,6 @@ class curl {
         }
         $postFields = array();
         foreach ($postdata as $name => $value) {
-            $name = urlencode($name);
             if (is_object($value) && !self::isCurlFile($value)) {
                 $value = (array)$value;
             }
@@ -436,7 +435,7 @@ class curl {
      */
     private function makeArrayField($fieldname, $arrayData, $postFields) {
         foreach ($arrayData as $key => $value) {
-            $key = urlencode($key);
+            $key = $key;
             if (is_object($value)) {
                 $value = (array)$value;
             }
@@ -444,7 +443,7 @@ class curl {
                 $newfieldname = $fieldname . "[$key]";
                 $postFields = $this->makeArrayField($newfieldname, $value, $postFields);
             } else {
-                $postFields[] = $fieldname . "[$key]=" . urlencode($value);
+                $postFields[$fieldname . "[$key]"] = $value;
             }
         }
         return $postFields;
